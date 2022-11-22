@@ -8,8 +8,8 @@ window.addEventListener('DOMContentLoaded', function () {
 	const country = 'Russia';
 	document.body.style.backgroundImage = `url('https://source.unsplash.com/1600x900/?${country}')`;
 	defaultDarkMode();
-	const darkModeToggle = document.querySelector('.toggle-btn');
-	darkModeToggle.addEventListener('click', checkDarkMode);
+	// const darkModeToggle = document.querySelector('.toggle-btn');
+	// darkModeToggle.addEventListener('click', checkDarkMode);
 
 	for (let i = 0; i < 9; i++) {
 		document.getElementById('game').innerHTML += `<div class="block" id="${i}"></div>`;
