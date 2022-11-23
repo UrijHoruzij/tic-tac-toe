@@ -1,3 +1,13 @@
+const winCombos = [
+	[0, 1, 2],
+	[3, 4, 5],
+	[6, 7, 8],
+	[0, 3, 6],
+	[1, 4, 7],
+	[2, 5, 8],
+	[0, 4, 8],
+	[6, 4, 2],
+];
 window.addEventListener('DOMContentLoaded', function () {
 	// navigator.geolocation.getCurrentPosition(
 	// 	(position) => {
@@ -5,30 +15,23 @@ window.addEventListener('DOMContentLoaded', function () {
 	// 	},
 	// 	() => 'Russia',
 	// );
+	let choice, huPlayer, aiPlayer, origBoard;
 	const country = 'Russia';
 	document.body.style.backgroundImage = `url('https://source.unsplash.com/1600x900/?${country}')`;
 	defaultDarkMode();
-	// const darkModeToggle = document.querySelector('.toggle-btn');
-	// darkModeToggle.addEventListener('click', checkDarkMode);
+	const darkModeToggle = document.querySelector('.toggle-btn');
+	darkModeToggle.addEventListener('click', checkDarkMode);
+	const startBtn = document.querySelector('[data-start]');
+	startBtn.addEventListener('click', startGame);
 
+	const game = document.querySelector('.game');
 	for (let i = 0; i < 9; i++) {
-		document.getElementById('game').innerHTML += `<div class="block" id="${i}"></div>`;
+		game.innerHTML += `<div class="cell" id="${i}"></div>`;
 	}
-	let choice, huPlayer, aiPlayer, origBoard;
-	const block = document.querySelectorAll('.block'),
-		reset = document.getElementById('reset'),
-		message = document.getElementById('message'),
-		radios = document.querySelectorAll('input[type="radio"]');
-	const winCombos = [
-		[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[6, 4, 2],
-	];
+
+	const cells = document.querySelectorAll('.cell');
+	const message = document.querySelector('.message');
+	const radios = document.querySelectorAll('input[type="radio"]');
 
 	radiocheck();
 	for (let i = 0; i < radios.length; i++) {
@@ -52,13 +55,15 @@ window.addEventListener('DOMContentLoaded', function () {
 				break;
 		}
 	}
-	startGame();
 	function startGame() {
+		startBtn.style.visibility = 'hidden';
 		origBoard = Array.from(Array(9).keys());
-		for (let i = 0; i < block.length; i++) {
-			block[i].innerText = '';
+		for (let i = 0; i < cells.length; i++) {
+			cells[i].classList.remove('lose');
+			cells[i].classList.remove('win');
+			cells[i].innerText = '';
 			message.style.opacity = '0';
-			block[i].addEventListener('click', turnClick, false);
+			cells[i].addEventListener('click', turnClick, false);
 		}
 	}
 
@@ -89,10 +94,18 @@ window.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function gameOver(gameWon) {
-		for (let i = 0; i < block.length; i++) {
-			block[i].removeEventListener('click', turnClick, false);
+		for (let i = 0; i < cells.length; i++) {
+			cells[i].removeEventListener('click', turnClick, false);
 		}
-		declareWinner(gameWon.player == huPlayer ? 'Вы победили!' : 'Вы проиграли.');
+		declareWinner(gameWon.player == huPlayer ? `Вы победили!${gameWon.index}` : `Вы проиграли.${gameWon.index}`);
+		if (gameWon.player == huPlayer) {
+			declareWinner(`Вы победили!`);
+			winCells(cells, gameWon.index, true);
+		} else {
+			declareWinner(`Вы проиграли.`);
+			winCells(cells, gameWon.index, false);
+		}
+		startBtn.style.visibility = 'visible';
 	}
 
 	function declareWinner(who) {
@@ -110,10 +123,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
 	function checkTie() {
 		if (emptySquares().length == 0) {
-			for (let i = 0; i < block.length; i++) {
-				block[i].removeEventListener('click', turnClick, false);
+			for (let i = 0; i < cells.length; i++) {
+				cells[i].removeEventListener('click', turnClick, false);
 			}
 			declareWinner('Ничья!');
+			startBtn.style.visibility = 'visible';
 			return true;
 		}
 		return false;
@@ -163,15 +177,8 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 		return moves[bestMove];
 	}
-	reset.addEventListener('click', function () {
-		if (choice == 1) {
-			startGame();
-			turn(bestSpot(), aiPlayer);
-		} else {
-			startGame();
-		}
-	});
 });
+
 const enableDarkMode = () => {
 	document.body.classList.add('darkmode');
 	localStorage.setItem('darkMode', 'enabled');
@@ -187,4 +194,15 @@ const defaultDarkMode = () => {
 const checkDarkMode = () => {
 	let darkMode = localStorage.getItem('darkMode');
 	darkMode != 'enabled' ? enableDarkMode() : disableDarkMode();
+};
+
+const winCells = (cells, index, status) => {
+	const cellsWin = winCombos[index];
+	let statusClass = 'lose';
+	if (status) {
+		statusClass = 'win';
+	}
+	for (let i = 0; i < cellsWin.length; i++) {
+		cells[cellsWin[i]].classList.add(statusClass);
+	}
 };
