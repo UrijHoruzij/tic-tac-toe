@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Крестики-нолики</title>
-	<link rel="stylesheet" href="style.css">
-	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
-</head>
-<body>
-	<header>
-		<div>
-			<div class="info">
-				<h1>Крестики-нолики</h1>
-				<h2>Выберите символ</h2>
-				<label>X</label>
-				<input type="radio" id="radio1" name="radio" value="0" checked="true">
-				<label>O</label>
-				<input type="radio" id="radio2" name="radio" value="1">
-				<p id="message">
-					Ходит игрок
-				</p>
-			</div>
-			<div id="game">
-				
-			</div>
-			<button id="reset">Очистить</button>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Tic-Tac-Toe</title>
+		<link rel="stylesheet" href="style.css" />
+		<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="toggle-btn">
+			<svg xmlns="http://www.w3.org/2000/svg" class="contrast" width="20" height="20" viewBox="0 0 512 512">
+				<circle cx="256" cy="256" r="208" stroke="currentColor" fill="none" stroke-linejoin="round" stroke-width="32" />
+				<path fill="currentColor" d="M256,464C141.12,464,48,370.88,48,256S141.12,48,256,48Z" />
+			</svg>
 		</div>
-	</header>
-	<script src="script.js"></script>
-</body>
+		<div class="card">
+			<div class="info">
+				<h1 class="title">Tic-Tac-Toe</h1>
+				<h2 class="subtitle">Выберите символ</h2>
+				<!-- <label class="switch">
+					<input type="checkbox" id="checkbox" />
+					<div class="slider">
+						<span class="symbol-x">X</span>
+						<span class="symbol-o">O</span>
+					</div>
+				</label> -->
+				<label>X</label>
+				<input type="radio" id="radio1" name="radio" value="0" checked="true" />
+				<label>O</label>
+				<input type="radio" id="radio2" name="radio" value="1" />
+				<p class="message">Ходит игрок</p>
+			</div>
+			<div class="game"></div>
+			<button class="btn" data-start="start">Играть</button>
+		</div>
+		<script src="script.js"></script>
+	</body>
 </html>
