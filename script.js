@@ -1,61 +1,31 @@
-const winCombos = [
-	[0, 1, 2],
-	[3, 4, 5],
-	[6, 7, 8],
-	[0, 3, 6],
-	[1, 4, 7],
-	[2, 5, 8],
-	[0, 4, 8],
-	[6, 4, 2],
-];
-window.addEventListener('DOMContentLoaded', function () {
-	// navigator.geolocation.getCurrentPosition(
-	// 	(position) => {
-	// 		const { latitude, longitude } = position.coords;
-	// 	},
-	// 	() => 'Russia',
-	// );
-	let choice, huPlayer, aiPlayer, origBoard;
-	const country = 'Russia';
-	document.body.style.backgroundImage = `url('https://source.unsplash.com/1600x900/?${country}')`;
-	defaultDarkMode();
-	const darkModeToggle = document.querySelector('.toggle-btn');
-	darkModeToggle.addEventListener('click', checkDarkMode);
+function gameClass() {
+	const winCombos = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[6, 4, 2],
+	];
+	let choice, huPlayer, aiPlayer, origBoard, cells;
 	const startBtn = document.querySelector('[data-start]');
-	startBtn.addEventListener('click', startGame);
-
-	const game = document.querySelector('.game');
-	for (let i = 0; i < 9; i++) {
-		game.innerHTML += `<div class="cell" id="${i}"></div>`;
-	}
-
-	const cells = document.querySelectorAll('.cell');
 	const message = document.querySelector('.message');
 	const radios = document.querySelectorAll('input[type="radio"]');
-
-	radiocheck();
-	for (let i = 0; i < radios.length; i++) {
-		radios[i].addEventListener('click', radiocheck);
-	}
-	function radiocheck() {
+	const game = document.querySelector('.game');
+	this.build = () => {
+		for (let i = 0; i < 9; i++) {
+			game.innerHTML += `<div class="cell" id="${i}"></div>`;
+		}
+		cells = document.querySelectorAll('.cell');
+		checkSymbol();
 		for (let i = 0; i < radios.length; i++) {
-			if (radios[i].checked) {
-				choice = radios[i].value;
-			}
+			radios[i].addEventListener('click', checkSymbol);
 		}
-		switch (choice) {
-			case '1':
-				huPlayer = 'O';
-				aiPlayer = 'X';
-				turn(bestSpot(), aiPlayer);
-				break;
-			case '0':
-				huPlayer = 'X';
-				aiPlayer = 'O';
-				break;
-		}
-	}
-	function startGame() {
+		startBtn.addEventListener('click', startGame);
+	};
+	const startGame = () => {
 		startBtn.style.visibility = 'hidden';
 		origBoard = Array.from(Array(9).keys());
 		for (let i = 0; i < cells.length; i++) {
@@ -65,23 +35,37 @@ window.addEventListener('DOMContentLoaded', function () {
 			message.style.opacity = '0';
 			cells[i].addEventListener('click', turnClick, false);
 		}
-	}
-
-	function turnClick(square) {
+	};
+	const checkSymbol = () => {
+		for (let i = 0; i < radios.length; i++) {
+			if (radios[i].checked) {
+				choice = radios[i].value;
+			}
+		}
+		switch (choice) {
+			case '1':
+				huPlayer = 'O';
+				aiPlayer = 'X';
+				break;
+			case '0':
+				huPlayer = 'X';
+				aiPlayer = 'O';
+				break;
+		}
+	};
+	const turnClick = (square) => {
 		if (typeof origBoard[square.target.id] == 'number') {
 			turn(square.target.id, huPlayer);
 			if (!checkWin(origBoard, huPlayer) && !checkTie()) turn(bestSpot(), aiPlayer);
 		}
-	}
-
-	function turn(squareId, player) {
+	};
+	const turn = (squareId, player) => {
 		origBoard[squareId] = player;
 		document.getElementById(squareId).innerText = player;
 		let gameWon = checkWin(origBoard, player);
 		if (gameWon) gameOver(gameWon);
-	}
-
-	function checkWin(board, player) {
+	};
+	const checkWin = (board, player) => {
 		let plays = board.reduce((a, e, i) => (e === player ? a.concat(i) : a), []);
 		let gameWon = null;
 		for (let [index, win] of winCombos.entries()) {
@@ -91,37 +75,32 @@ window.addEventListener('DOMContentLoaded', function () {
 			}
 		}
 		return gameWon;
-	}
-
-	function gameOver(gameWon) {
+	};
+	const winCells = (index, status) => {
+		for (let i = 0; i < winCombos[index].length; i++) {
+			cells[winCombos[index][i]].classList.add(status ? 'win' : 'lose');
+		}
+	};
+	const gameOver = (gameWon) => {
 		for (let i = 0; i < cells.length; i++) {
 			cells[i].removeEventListener('click', turnClick, false);
 		}
-		declareWinner(gameWon.player == huPlayer ? `Вы победили!${gameWon.index}` : `Вы проиграли.${gameWon.index}`);
 		if (gameWon.player == huPlayer) {
 			declareWinner(`Вы победили!`);
-			winCells(cells, gameWon.index, true);
+			winCells(gameWon.index, true);
 		} else {
 			declareWinner(`Вы проиграли.`);
-			winCells(cells, gameWon.index, false);
+			winCells(gameWon.index, false);
 		}
 		startBtn.style.visibility = 'visible';
-	}
-
-	function declareWinner(who) {
+	};
+	const declareWinner = (who) => {
 		message.style.opacity = '1';
 		message.innerText = who;
-	}
-
-	function emptySquares() {
-		return origBoard.filter((s) => typeof s == 'number');
-	}
-
-	function bestSpot() {
-		return minimax(origBoard, aiPlayer).index;
-	}
-
-	function checkTie() {
+	};
+	const emptySquares = () => origBoard.filter((s) => typeof s == 'number');
+	const bestSpot = () => minimax(origBoard, aiPlayer).index;
+	const checkTie = () => {
 		if (emptySquares().length == 0) {
 			for (let i = 0; i < cells.length; i++) {
 				cells[i].removeEventListener('click', turnClick, false);
@@ -131,9 +110,8 @@ window.addEventListener('DOMContentLoaded', function () {
 			return true;
 		}
 		return false;
-	}
-
-	function minimax(newBoard, player) {
+	};
+	const minimax = (newBoard, player) => {
 		let availSpots = emptySquares();
 		if (checkWin(newBoard, huPlayer)) {
 			return { score: -1 };
@@ -176,8 +154,8 @@ window.addEventListener('DOMContentLoaded', function () {
 			}
 		}
 		return moves[bestMove];
-	}
-});
+	};
+}
 
 const enableDarkMode = () => {
 	document.body.classList.add('darkmode');
@@ -196,13 +174,12 @@ const checkDarkMode = () => {
 	darkMode != 'enabled' ? enableDarkMode() : disableDarkMode();
 };
 
-const winCells = (cells, index, status) => {
-	const cellsWin = winCombos[index];
-	let statusClass = 'lose';
-	if (status) {
-		statusClass = 'win';
-	}
-	for (let i = 0; i < cellsWin.length; i++) {
-		cells[cellsWin[i]].classList.add(statusClass);
-	}
-};
+window.addEventListener('DOMContentLoaded', function () {
+	const country = 'Russia';
+	document.body.style.backgroundImage = `url('https://source.unsplash.com/1600x900/?${country}')`;
+	defaultDarkMode();
+	const darkModeToggle = document.querySelector('.toggle-btn');
+	darkModeToggle.addEventListener('click', checkDarkMode);
+	const game = new gameClass();
+	game.build();
+});

@@ -116,31 +116,11 @@ body {
 	transition: ease-in-out 0.3s;
 	margin-top: 16px;
 }
-
 .title {
 	font-size: 28px;
 	color: var(--white);
 	font-weight: 400;
 }
-
-/* 
-h2 {
-	margin-top: 15px;
-	font-family: 'Montserrat', sans-serif;
-	font-size: 20px;
-	color: #fff;
-	font-weight: 400;
-}
-label {
-	font-family: 'Montserrat', sans-serif;
-	font-size: 20px;
-	color: #fff;
-	font-weight: 400;
-}
-input {
-	margin-right: 25px;
-}
- */
 .message {
 	font-size: 24px;
 	color: var(--white);
